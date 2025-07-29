@@ -1,0 +1,7 @@
+{
+    "java.debug.settings.onBuildFailureProceed": true,
+    "files.associations": {
+        "*.ejs": "html",
+        "iostream": "cpp"
+    }
+}

@@ -1,0 +1,32 @@
+// count the number of digits in a number 
+// print all prime numbers less than n
+#include <bits/stdc++.h>
+using namespace std;
+
+#define int long long
+#define fastio                        \
+    ios_base::sync_with_stdio(false); \
+    cin.tie(NULL);                    \
+    cout.tie(NULL);
+int count_digits(int n){
+    int cnt=0;
+    while(n>0){
+        cnt++;
+        n/=10;
+    }
+    return cnt;
+}
+int32_t main()
+{
+    fastio;
+
+    freopen("input.txt", "r", stdin);   // Read from input.txt
+    freopen("output.txt", "w", stdout); // Write to output.txt
+
+    int n;
+    cin >> n;
+
+    cout<<count_digits(n);
+
+    return 0;
+}
