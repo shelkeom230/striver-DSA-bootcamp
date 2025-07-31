@@ -531,6 +531,73 @@ def gasStationBrute(arr, k):
     return maxAns
 
 
+import heapq
+
+# gas station -- better solution
+# using priority queue
+
+
+def gas_station_better(arr, k):
+    n = len(arr)
+    how_many = [0] * (n - 1)
+
+    # max heap: use negative value since Python has min-heap by default
+    pq = []
+    for i in range(n - 1):
+        diff = arr[i + 1] - arr[i]
+        heapq.heappush(pq, (-diff, i))
+
+    for _ in range(k):
+        # get segment with largest section
+        neg_len, i = heapq.heappop(pq)
+        how_many[i] += 1
+
+        # recalculate new section length
+        diff = arr[i + 1] - arr[i]
+        new_len = diff / (how_many[i] + 1)
+
+        # push updated value back into heap
+        heapq.heappush(pq, (-new_len, i))
+
+    # return the max section length after placing all k stations
+    return -pq[0][0]
+
+
+# gas station -- optimal solution
+def noOfStationsRequired(dist, arr):
+    n = len(arr)
+    cnt = 0
+
+    for i in range(1, n):
+        noInBetween = (arr[i] - arr[i - 1]) // dist
+        if (arr[i] - arr[i - 1]) == (dist * noInBetween):
+            noInBetween -= 1
+        cnt += noInBetween
+
+    return cnt
+
+
+def gasStationOptimal(arr, k):
+    n = len(arr)
+    start, end = 0, 0
+
+    # find end value
+    for i in range(n - 1):
+        end = max(end, arr[i + 1] - arr[i])
+
+    diff = 1e-6
+    while end - start > diff:
+        mid = (start + end) / 2.0
+
+        noOfStations = noOfStationsRequired(mid, arr)
+
+        if noOfStations > k:
+            start = mid
+        else:
+            end = mid
+    return end
+
+
 def main():
     sys.stdin = open("binary search/input.txt", "r")
     sys.stdout = open("binary search/output.txt", "w")
@@ -541,7 +608,7 @@ def main():
     arr = list(map(int, input().split(",")))
     m = int(input())
     # k = int(input())
-    print(gasStationBrute(arr, m))
+    print(gasStationOptimal(arr, m))
 
 
 threading.Thread(target=main).start()

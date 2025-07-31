@@ -41,6 +41,45 @@ long double gasStationBrute(vector<int> &arr,int k){
     }
     return maxAns;
 }
+
+// gas stations -- better solution 
+// usinng a priority queue (max heap)
+long double gasStationBetter(vector<int> &arr,int k){
+    int n=arr.size();
+    vector<int> howManySt(n-1,0);
+    priority_queue<pair<long double,int>> pq;
+
+    // insert the initial distances into pq 
+    for(int i=0;i<n;i++){
+        pq.push({arr[i+1]-arr[i],i});
+    }
+
+    // pick and place each gas station 
+    for(int i=1;i<=k;i++){
+        // find the maximum section 
+        // and place the gas station there
+        auto tp=pq.top();
+        pq.pop();
+        int secIndx=tp.second;
+        
+        // place the current gas station at secIndx 
+        howManySt[secIndx]++;
+
+        // calculate the old section diff 
+        long double initDiff=arr[secIndx+1]-arr[secIndx];
+        long double newSecLength=initDiff/(long double)(howManySt[secIndx]+1);
+
+        // push to new values in pq 
+        pq.push({newSecLength,secIndx});
+    }
+    return pq.top().first; 
+}
+
+// gas station -- optimal 
+long double gasStationOptimal(vector<int> &arr,int k){
+    
+}
+
 int main() {
     setupIO();
 
@@ -52,7 +91,7 @@ int main() {
     for(int i=0;i<n;i++){
         cin>>arr[i];
     }
-    cout<<gasStationBrute(arr,k);
+    cout<<gasStationBetter(arr,k);
 
     return 0;
 }
