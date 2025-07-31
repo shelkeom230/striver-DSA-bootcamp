@@ -413,7 +413,115 @@ def allocatePagesOptimal(arr, m):
             start = mid + 1
     return start
 
+# split array largest sum -- brute force 
+def countPartitions(arr,maxSum):
+    part=1
+    subarraySum=0
 
+    for i in range(len(arr)):
+        if arr[i]+subarraySum<=maxSum:
+            subarraySum+=arr[i]
+        else:
+            part+=1
+            subarraySum=arr[i]
+    
+    return part  
+
+def splitArrayBrute(arr,k):
+    minSum,maxSum=max(arr),sum(arr)
+    if len(arr)==k:
+        return minSum 
+
+    for i in range(minSum,maxSum+1):
+        part=countPartitions(arr,i)
+
+        if part==k:
+            return i 
+    return minSum 
+
+# split array largest sum -- optimal 
+def splitArrayOptimal(arr,k):
+    start,end=max(arr),sum(arr)
+
+    while start<=end:
+        mid=(start+end)//2
+
+        part=countPartitions(arr,mid)
+
+        if part==k:
+            end=mid-1 
+        elif part<k:
+            end=mid-1
+        else:
+            start=mid+1 
+    return start  
+
+# painters partition -- brute force 
+def countPainters(arr,time):
+    painters,boardsPainter=1,0
+
+    for i in range(len(arr)):
+        if arr[i]+boardsPainter<=time:
+            boardsPainter+=arr[i]
+        else:
+            painters+=1
+            boardsPainter=arr[i]
+    return painters 
+
+def paintersPartBrute(arr,k):
+    minTime,maxTime=max(arr),sum(arr)
+
+    if len(arr)==k:
+        return minTime 
+
+    for i in range(minTime,maxTime+1):
+        painters=countPainters(arr,i)
+
+        if painters==k:
+            return i 
+    return minTime 
+
+# painters pattern -- optimal solution 
+def paintersPartOptimal(arr,k):
+    start,end=max(arr),sum(arr)
+
+    while start<=end:
+        mid=(start+end)//2
+
+        painters=countPainters(arr,mid)
+
+        if painters<=k:
+            end=mid-1
+        else:
+            start=mid+1 
+    return start 
+
+# Minimise Maximum Distance between Gas Stations -- brute force 
+def gasStationBrute(arr,k):
+    n=len(arr)
+
+    howManySt=[0]*(n-1)
+    for i in range(1,k+1):
+        maxValue,maxIndex=-1,-1 
+
+        for j in range(n-1):
+            diff=arr[j+1]-arr[j]
+
+            secLength=diff/(howManySt[j]+1)
+            if secLength>maxValue:
+                maxValue=secLength
+                maxIndex=j
+        
+        howManySt[maxIndex]+=1
+    
+    # find the ans 
+    maxAns=-1 
+
+    for i in range(n-1):
+        diff=arr[i+1]-arr[i]
+        secLength=diff/(howManySt[i]+1)
+        maxAns=max(maxAns,secLength)
+    return maxAns
 def main():
     sys.stdin = open("binary search/input.txt", "r")
     sys.stdout = open("binary search/output.txt", "w")
@@ -424,7 +532,7 @@ def main():
     arr = list(map(int, input().split(",")))
     m = int(input())
     # k = int(input())
-    print(allocatePagesOptimal(arr, m))
+    print(gasStationBrute(arr, m))
 
 
 threading.Thread(target=main).start()
