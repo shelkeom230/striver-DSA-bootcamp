@@ -707,6 +707,97 @@ def medianSortedOptimal(a: list[int], b: list[int]) -> float:
             start = mid1 + 1
 
 
+# find value at index k after merging 2 sorted arrays -- brute force
+def kthElementBrute(a, b, m, n, k):
+    arr3 = []
+
+    # Apply the merge step:
+    i, j = 0, 0
+    while i < m and j < n:
+        if a[i] < b[j]:
+            arr3.append(a[i])
+            i += 1
+        else:
+            arr3.append(b[j])
+            j += 1
+
+    # Copy the left-out elements:
+    arr3.extend(a[i:])
+    arr3.extend(b[j:])
+    return arr3[k - 1]
+
+
+# -- better solution
+def kthElementBetter(a, b, m, n, k):
+    ele = -1
+    cnt = 0  # counter
+    # apply the merge step:
+    i, j = 0, 0
+    while i < m and j < n:
+        if a[i] < b[j]:
+            if cnt == k - 1:
+                ele = a[i]
+            cnt += 1
+            i += 1
+        else:
+            if cnt == k - 1:
+                ele = b[j]
+            cnt += 1
+            j += 1
+
+    # copy the left-out elements:
+    while i < m:
+        if cnt == k - 1:
+            ele = a[i]
+        cnt += 1
+        i += 1
+    while j < n:
+        if cnt == k - 1:
+            ele = b[j]
+        cnt += 1
+        j += 1
+    return ele
+
+
+# -- optimal solution
+def kthElementOptimal(a, b, m, n, k):
+    if m > n:
+        return kthElementOptimal(b, a, n, m, k)
+
+    left = k  # length of left half
+
+    # apply binary search:
+    low = max(0, k - n)
+    high = min(k, m)
+    while low <= high:
+        mid1 = (low + high) // 2
+        mid2 = left - mid1
+        # calculate l1, l2, r1, and r2
+        l1 = float("-inf")
+        l2 = float("-inf")
+        r1 = float("inf")
+        r2 = float("inf")
+        if mid1 < m:
+            r1 = a[mid1]
+        if mid2 < n:
+            r2 = b[mid2]
+        if mid1 - 1 >= 0:
+            l1 = a[mid1 - 1]
+        if mid2 - 1 >= 0:
+            l2 = b[mid2 - 1]
+
+        if l1 <= r2 and l2 <= r1:
+            return max(l1, l2)
+
+        # eliminate the halves:
+        elif l1 > r2:
+            high = mid1 - 1
+        else:
+            low = mid1 + 1
+
+    return 0  # dummy statement
+
+
 def main():
     sys.stdin = open("binary search/input.txt", "r")
     sys.stdout = open("binary search/output.txt", "w")
@@ -717,8 +808,7 @@ def main():
     arr1 = list(map(int, input().split(",")))
     arr2 = list(map(int, input().split(",")))
     # m = int(input())
-    # k = int(input())
-    print(medianSortedSpaceOptm(arr1, arr2))
+    k = int(input())
 
 
 threading.Thread(target=main).start()
