@@ -598,6 +598,115 @@ def gasStationOptimal(arr, k):
     return end
 
 
+# median of 2 sorted arrays -- brute force
+def median(a, b):
+    # Write the function here.
+    # pass
+    n1 = len(a)
+    n2 = len(b)
+
+    p1, p2 = 0, 0
+    ans = []
+    while p1 < n1 and p2 < n2:
+        if a[p1] < b[p2]:
+            ans.append(a[p1])
+            p1 += 1
+        else:
+            ans.append(b[p2])
+            p2 += 1
+
+    # copy back remaining elements
+    while p1 < n1:
+        ans.append(a[p1])
+        p1 += 1
+
+    while p2 < n2:
+        ans.append(b[p2])
+        p2 += 1
+
+    n = len(ans)
+    if n % 2 == 0:
+        median = (ans[(n // 2) - 1] + ans[(n // 2)]) / 2.0
+        return median
+    return float(ans[n // 2])
+
+
+# median of 2 sorted arrays -- space optimised
+def medianSortedSpaceOptm(arr1, arr2):
+    m, n = len(arr1), len(arr2)
+    i, j = 0, 0
+    totalLength = n + m
+    median1, median2 = -1, -1
+    count = 0
+
+    target1 = totalLength // 2
+    target2 = target1 - 1
+
+    while count <= target1:
+        if i < n and (j >= m or arr1[i] <= arr2[j]):
+            val = arr1[i]
+            i += 1
+        else:
+            val = arr2[j]
+            j += 1
+
+        if count == target2:
+            median1 = val
+        if count == target1:
+            median2 = val
+
+        if median1 != -1 and median2 != -1:
+            break
+
+        count += 1
+
+    if totalLength % 2 == 0:
+        return (median1 + median2) / 2.0
+    else:
+        return float(median2)
+
+
+# median of 2 sorted arrays -- optimal
+def medianSortedOptimal(a: list[int], b: list[int]) -> float:
+
+    n1 = len(a)
+    n2 = len(b)
+
+    n = n1 + n2
+    if n1 > n2:
+        return median(b, a)
+    start = 0
+    end = n1
+    left = (n1 + n2 + 1) // 2
+
+    while start <= end:
+        mid1 = (start + end) // 2
+        mid2 = left - mid1
+
+        l1, l2 = float("-inf"), float("-inf")
+        r1, r2 = float("inf"), float("inf")
+
+        if mid1 < n1:
+            r1 = a[mid1]
+        if mid2 < n2:
+            r2 = b[mid2]
+        if mid1 - 1 >= 0:
+            l1 = a[mid1 - 1]
+        if mid2 - 1 >= 0:
+            l2 = b[mid2 - 1]
+
+        if l1 <= r2 and l2 <= r1:
+            if n % 2 == 0:
+                return (max(l1, l2) + min(r1, r2)) / 2.0
+            else:
+                return float(max(l1, l2))
+
+        elif l1 > r2:
+            end = mid1 - 1
+        else:
+            start = mid1 + 1
+
+
 def main():
     sys.stdin = open("binary search/input.txt", "r")
     sys.stdout = open("binary search/output.txt", "w")
@@ -605,10 +714,11 @@ def main():
 
     # start here
     # n = int(input())
-    arr = list(map(int, input().split(",")))
-    m = int(input())
+    arr1 = list(map(int, input().split(",")))
+    arr2 = list(map(int, input().split(",")))
+    # m = int(input())
     # k = int(input())
-    print(gasStationOptimal(arr, m))
+    print(medianSortedSpaceOptm(arr1, arr2))
 
 
 threading.Thread(target=main).start()
