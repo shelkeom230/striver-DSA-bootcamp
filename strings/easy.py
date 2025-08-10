@@ -94,7 +94,7 @@ def validAnagram(s,t):
     
     return freq_t==freq_s 
 
-# valid anagram better approach with dict 
+# valid anagram better approach with char array
 def validAnagramBetter(s,t):
     if len(s)!=len(t):
         return False 
@@ -106,6 +106,7 @@ def validAnagramBetter(s,t):
         count[ord(t[i])-'a']-=1
     
     return all(x==0 for x in count)
+
 def main():
     sys.stdin = open("strings/input.txt", "r")
     sys.stdout = open("strings/output.txt", "w")
