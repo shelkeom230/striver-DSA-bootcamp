@@ -107,8 +107,7 @@ def deleteNodeByValLL(head, ele):
 # insert a node at start of LL
 def insertAtHeadLL(head, val):
     newNode = Node(val, head)
-    head = newNode
-    return head
+    return newNode
 
 
 # insert a node at end of LL
@@ -182,7 +181,7 @@ def main():
     head.next.next = Node(5)
     head.next.next.next = Node(6)
 
-    head = insertBeforeXLL(head, 100, 3)
+    head = insertAtHeadLL(head, 10)
     printLL(head)
 
 
