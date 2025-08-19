@@ -107,11 +107,11 @@ public class DoublyLL {
         }
         // 2. head node
         else if (back == null) {
-            return deleteHeadDLL(head);
+            return deleteHead(head);
         }
         // 3. tail node
         else if (front == null) {
-            return deleteTailLL(head);
+            return deleteTail(head);
         } else {
             // 4. node in between
             back.next = front;
@@ -198,10 +198,139 @@ public class DoublyLL {
 
     }
 
+    // insertion after head node
+    public static Node insertAfterHead(Node head, int val) {
+        // no node
+        if (head == null) {
+            Node newNode = new Node(val, null, null);
+            return newNode;
+        }
+        // single node
+        if (head.next == null) {
+            Node newNode = new Node(val, null, head);
+            head.next = newNode;
+            return head;
+        }
+        // more than 1 node
+        Node front = head.next;
+        Node newNode = new Node(val, front, head);
+        head.next = newNode;
+        front.prev = newNode;
+        return head;
+
+    }
+
+    // insert after tail node
+    public static Node insertAfterTail(Node head, int val) {
+        // no head
+        if (head == null) {
+            return new Node(val, null, null);
+        }
+        // single node
+        if (head.next == null) {
+            Node newNode = new Node(val, null, head);
+            head.next = newNode;
+            return head;
+        }
+        // more than 1 node
+        // reach to tail node
+        Node tail = head;
+        while (tail.next != null) {
+            tail = tail.next;
+        }
+        Node newNode = new Node(val, null, tail);
+        tail.next = newNode;
+        return head;
+    }
+
+    // insertion after kth element
+    public static Node insertAfterKthEle(Node head, int val, int k) {
+        // no node
+        if (head == null) {
+            if (k == 1) {
+                return new Node(val, null, null);
+            } else {
+                System.out.println("invalid posiitoin");
+            }
+        }
+        // insertion after head node
+        if (k == 1) {
+            Node newNode = new Node(val, null, head);
+            head.next = newNode;
+            return head;
+        }
+        // in between node
+        // reach to kth node
+        Node temp = head;
+        int cnt = 0;
+        while (temp.next != null) {
+            cnt += 1;
+            if (cnt == k)
+                break;
+            temp = temp.next;
+        }
+        Node front = temp.next;
+        // k is last node
+        if (front == null) {
+            Node newNode = new Node(val, null, temp);
+            temp.next = newNode;
+            return head;
+        }
+        Node newNode = new Node(val, front, temp);
+        temp.next = newNode;
+        front.prev = newNode;
+        return head;
+
+    }
+
+    // insert after a given node
+    public static void insertAfterNode(Node node, int val) {
+        Node front = node.next;
+        Node newNode = new Node(val, front, node);
+        node.next = newNode;
+        if (front != null) {
+            front.prev = newNode;
+        }
+    }
+
+    // reverse a DLL -- reverse the data
+    public static void reverseDLL(Node head) {
+        Node temp = head;
+        Stack<Integer> stk = new Stack<>();
+        // push data in stack
+        while (temp != null) {
+            stk.push(temp.data);
+            temp = temp.next;
+        }
+        // pop and place in reverse
+        temp = head;
+        while (temp != null) {
+            temp.data = stk.pop();
+            temp = temp.next;
+        }
+    }
+
+    // reverse a DLL - optimal single pass
+    public static Node reverseDLLOptimal(Node head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        Node curr = head;
+        Node last = null;
+
+        while (curr != null) {
+            last = curr.prev;
+            curr.prev = curr.next;
+            curr.next = last;
+            curr = curr.prev;
+        }
+        return last.prev;
+    }
+
     public static void main(String[] args) {
-        int arr[] = { 1, 3, 2, 4, 5 };
+        int arr[] = { 1, 2, 3, 4, 5 };
         Node head = arrayToDLL(arr);
-        insertBeforeNode(head.next.next.next.next, 100);
+        head = reverseDLLOptimal(head);
         printLL(head);
     }
 }

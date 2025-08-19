@@ -36,9 +36,33 @@ def printDLL(head):
         head = head.next
 
 
+# delete head node
+def deleteHead(head):
+    if head is None or head.next is None:
+        return None
+    newHead = head.next
+    newHead.prev = None
+    return newHead
+
+
+# delete tail node
+def deleteTail(head):
+    if head is None or head.next is None:
+        return None
+    tail = head
+    prev = head
+
+    while tail.next is not None:
+        prev = tail
+        tail = tail.next
+    prev.next = None
+    tail.prev = None
+    return head
+
+
 def main():
-    sys.stdin = open("linked list/input.txt", "r")
-    sys.stdout = open("linked list/output.txt", "w")
+    sys.stdin = open("linked_list/input.txt", "r")
+    sys.stdout = open("linked_list/output.txt", "w")
     input = sys.stdin.readline
 
     # start here
@@ -48,7 +72,7 @@ def main():
     # create a node with value 2
     arr = [1, 3, 2, 4]
     head = arraytoLL(arr)
-    print(cntNodesDLL(head))
+    printDLL(head)
 
 
 threading.Thread(target=main).start()
