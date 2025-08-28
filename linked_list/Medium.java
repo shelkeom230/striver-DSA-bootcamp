@@ -241,6 +241,632 @@ public class Medium {
         return 0;
     }
 
+    // check for palindrome LL
+    public static boolean checkPalindromeBrute(Node head) {
+        if (head == null || head.next == null)
+            return true;
+
+        Node curr = head;
+        Stack<Integer> stack = new Stack<>();
+        while (curr != null) {
+            stack.push(curr.data);
+            curr = curr.next;
+        }
+
+        curr = head;
+        while (curr != null) {
+            if (curr.data != stack.pop())
+                return false;
+            curr = curr.next;
+        }
+        return true;
+    }
+
+    public static boolean isPalindromeOptimal(Node head) {
+        if (head == null || head.next == null)
+            return true;
+        Node slow = head, fast = head;
+
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        Node newHead = reverseSinglyLL(slow.next);
+        Node first = head;
+        Node second = newHead;
+        while (second != null) {
+            if (first.data != second.data) {
+                reverseSinglyLL(newHead);
+                return false;
+            }
+            ;
+            first = first.next;
+            second = second.next;
+        }
+        reverseSinglyLL(newHead);
+        return true;
+
+    }
+
+    // segrate even and odd nodes in LL -- brute 1
+    public static Node segregateEvenOddNodesBrute(Node head) {
+        if (head == null || head.next == null)
+            return head;
+
+        ArrayList<Integer> even = new ArrayList<>();
+        ArrayList<Integer> odd = new ArrayList<>();
+
+        // seprate even and odd dataues
+        Node curr = head;
+        int cnt = 1;
+        while (curr != null) {
+            if (cnt % 2 == 0) {
+                even.add(curr.data);
+                cnt += 1;
+                curr = curr.next;
+            } else {
+                odd.add(curr.data);
+                cnt += 1;
+                curr = curr.next;
+            }
+        }
+
+        // put even dataues first
+        int i = 0;
+        curr = head;
+        while (i < even.size()) {
+            curr.data = even.get(i);
+            i++;
+            curr = curr.next;
+        }
+
+        // put odd dataues
+        int j = 0;
+        while (j < odd.size()) {
+            curr.data = odd.get(j);
+            j++;
+            curr = curr.next;
+        }
+        return head;
+    }
+
+    // segrate even and odd nodes in LL -- brute 2 another good approach
+    public static Node segregateEvenOddNodesBrute2(Node head) {
+        if (head == null || head.next == null)
+            return head;
+
+        ArrayList<Integer> list = new ArrayList<>();
+
+        Node curr = head;
+        // put odd nodes first
+        while (curr != null && curr.next != null) {
+            list.add(curr.data);
+            curr = curr.next.next;
+        }
+        // put last odd node
+        if (curr != null)
+            list.add(curr.data);
+
+        // put even nodes first
+        curr = head.next;
+        while (curr != null && curr.next != null) {
+            list.add(curr.data);
+            curr = curr.next.next;
+        }
+        if (curr != null)
+            list.add(curr.data);
+
+        // put back dataues to LL
+        int i = 0;
+        curr = head;
+        while (curr != null) {
+            i++;
+            curr.data = list.get(i);
+            curr = curr.next;
+        }
+        return head;
+    }
+
+    // segrate even and odd nodes in LL --optimal approach
+    public static Node oddEvenListOptimal(Node head) {
+        if (head == null || head.next == null)
+            return head;
+
+        Node odd = head;
+        Node even = head.next;
+        Node evenHead = head.next;
+
+        while (even != null && even.next != null) {
+            odd.next = odd.next.next;
+            even.next = even.next.next;
+
+            odd = odd.next;
+            even = even.next;
+        }
+        odd.next = evenHead;
+        return head;
+    }
+
+    // remove nth node from end of LL -- extreme brute force with extra space as
+    // weell
+    public static Node removeNthNodeBrute(Node head, int n) {
+        if (head.next == null && n == 1)
+            return null;
+
+        ArrayList<Integer> list = new ArrayList<>();
+
+        Node curr = head;
+        while (curr != null) {
+            list.add(curr.data);
+            curr = curr.next;
+        }
+        // calculate for 1 based index
+        int deleteIndex = list.size() - n + 1;
+
+        if (deleteIndex == 1) {
+            // remove head
+            Node newHead = head.next;
+            // detach current head
+            head.next = null;
+            return newHead;
+        }
+        int cnt = 0;
+        curr = head;
+        Node back = null;
+        while (curr != null) {
+            cnt++;
+            if (cnt == deleteIndex) {
+                // delete that node
+                back.next = curr.next;
+                curr.next = null;
+                break;
+            }
+            back = curr;
+            curr = curr.next;
+        }
+        return head;
+    }
+
+    // remove nth node from end of LL -- brute force without extra space
+    public static Node removeNthNodeBrute2(Node head, int n) {
+        int cnt = 0;
+        Node curr = head;
+        while (curr != null) {
+            cnt++;
+            curr = curr.next;
+        }
+
+        if (cnt == n) {
+            // removing head
+            Node newHead = head.next;
+            head.next = null;
+            return newHead;
+        }
+
+        int res = cnt - n;
+        curr = head;
+        while (curr != null) {
+            res--;
+
+            if (res == 0) {
+                Node deleteNode = curr.next;
+                curr.next = curr.next.next;
+                deleteNode.next = null;
+                break;
+            }
+            curr = curr.next;
+        }
+        return head;
+    }
+
+    // remove nth node from the end of LL -- optimal
+    public static Node removeNthFromEndOptimal(Node head, int n) {
+        // optimal
+        // move fast pointer n steps ahead
+        Node fast = head;
+        for (int i = 0; i < n; i++) {
+            fast = fast.next;
+        }
+        // if fast is at last node, i.e n=length of list, delete head node
+        if (fast == null)
+            return head.next;
+        Node slow = head;
+
+        while (fast.next != null) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        Node deleteNode = slow.next;
+        slow.next = slow.next.next;
+        deleteNode.next = null;
+        return head;
+
+    }
+
+    // remove middle node of a linked list -- brute force
+    public static Node deleteMiddleBrute(Node head) {
+        if (head.next == null)
+            return null;
+
+        int cnt = 0;
+        // count total nodes
+        Node curr = head;
+        while (curr != null) {
+            cnt++;
+            curr = curr.next;
+        }
+
+        // find middle position
+        int mid = (cnt / 2) + 1;
+        curr = head;
+        int reached = 0;
+
+        while (curr != null) {
+            reached++;
+            if (reached == mid - 1) {
+                curr.next = curr.next.next;
+                break;
+            }
+            curr = curr.next;
+        }
+        return head;
+
+    }
+
+    // sort linnked list - brute force
+    public static Node sortListBrute(Node head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ArrayList<Integer> list = new ArrayList<>();
+        Node curr = head;
+
+        while (curr != null) {
+            list.add(curr.data);
+            curr = curr.next;
+        }
+        int i = 0;
+        curr = head;
+        while (curr != null) {
+            curr.data = list.get(i);
+            i++;
+            curr = curr.next;
+        }
+        return head;
+    }
+
+    // find middle node of LL
+    public Node findMiddle(Node head) {
+        // slightly changed tortoise and hare algorithm
+        Node slow = head;
+        Node fast = head.next;
+
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+
+    // sort linked list -- optimal
+    public Node merge(Node list1, Node list2) {
+        Node dummyNode = new Node(-1);
+        Node temp = dummyNode;
+        while (list1 != null && list2 != null) {
+            if (list1.data < list2.data) {
+                temp.next = list1;
+                temp = list1;
+                list1 = list1.next;
+            } else {
+                temp.next = list2;
+                temp = list2;
+                list2 = list2.next;
+            }
+        }
+        if (list1 != null)
+            temp.next = list1;
+        else
+            temp.next = list2;
+        return dummyNode.next;
+    }
+
+    // sort linked list -- optimal
+    public Node sortListOptimal(Node head) {
+        if (head == null || head.next == null)
+            return head;
+        Node middle = findMiddle(head);
+        Node leftHead = head, rightHead = middle.next;
+        middle.next = null;
+        leftHead = sortListOptimal(leftHead);
+        rightHead = sortListOptimal(rightHead);
+        return merge(leftHead, rightHead);
+
+    }
+
+    // sort a LL of 0,1 and 2's -- brute 1 most inefficient
+    public static Node sortListBrute1(Node head) {
+        if (head == null || head.next == null)
+            return head;
+
+        List<Integer> list = new ArrayList<>();
+        Node curr = head;
+        while (curr != null) {
+            list.add(curr.data);
+            curr = curr.next;
+        }
+
+        Collections.sort(list);
+
+        // copy back again
+        curr = head;
+        int i = 0;
+        while (curr != null) {
+            curr.data = list.get(i);
+            i++;
+            curr = curr.next;
+        }
+        return head;
+    }
+
+    // sort a LL of 0,1 and 2's -- brute 2 without extra space
+    public static Node sortListBrute2(Node head) {
+        if (head == null || head.next == null)
+            return head;
+
+        int cnt0 = 0, cnt1 = 0, cnt2 = 0;
+
+        Node curr = head;
+
+        while (curr != null) {
+            if (curr.data == 0)
+                cnt0++;
+            else if (curr.data == 1)
+                cnt1++;
+            else
+                cnt2++;
+            curr = curr.next;
+        }
+
+        // copy back values
+        curr = head;
+        while (curr != null) {
+            if (cnt0 > 0) {
+                curr.data = 0;
+                cnt0--;
+            } else if (cnt1 > 0) {
+                curr.data = 1;
+                cnt1--;
+            } else {
+                curr.data = 2;
+                cnt2--;
+            }
+            curr = curr.next;
+        }
+        return head;
+    }
+
+    // sort a LL of 0,1 and 2's -- optimal
+    public static Node sortList(Node head) {
+        // Write your code here
+        if (head == null || head.next == null)
+            return head;
+
+        Node zeroHead = new Node(-1);
+        Node oneHead = new Node(-1);
+        Node twoHead = new Node(-1);
+
+        Node zero = zeroHead;
+        Node one = oneHead;
+        Node two = twoHead;
+
+        Node curr = head;
+
+        while (curr != null) {
+            if (curr.data == 0) {
+                zero.next = curr;
+                zero = curr;
+            } else if (curr.data == 1) {
+                one.next = curr;
+                one = curr;
+            } else {
+                two.next = curr;
+                two = curr;
+            }
+            curr = curr.next;
+        }
+
+        // link changes
+        zero.next = (oneHead.next != null) ? oneHead.next : twoHead.next;
+        one.next = (twoHead.next != null) ? twoHead.next : null;
+        two.next = null;
+        return zeroHead.next;
+    }
+
+    // intersection of 2 LL -- brute force
+    public static Node intersectionLLBrute(Node headA, Node headB) {
+
+        Node temp = headA;
+        Map<Node, Integer> mpp = new HashMap<>();
+
+        while (temp != null) {
+            mpp.put(temp, 1);
+            temp = temp.next;
+        }
+
+        // search exact similar node in second LL now
+        temp = headB;
+        while (temp != null) {
+            if (mpp.containsKey(temp))
+                return temp;
+            temp = temp.next;
+        }
+        return null;
+    }
+
+    // intersection of 2 LL -- better solution
+    public static int findIntersectionBetter(Node firstHead, Node secondHead) {
+        // Write your code here
+        Node temp = firstHead;
+        int cnt1 = 0, cnt2 = 0;
+
+        while (temp != null) {
+            cnt1++;
+            temp = temp.next;
+        }
+
+        temp = secondHead;
+        while (temp != null) {
+            cnt2++;
+            temp = temp.next;
+        }
+
+        // find the diff
+        int diff = Integer.MIN_VALUE;
+        Node temp2 = new Node(-1);
+
+        if (cnt1 > cnt2) {
+            diff = cnt1 - cnt2;
+            temp = firstHead;
+            for (int i = 0; i < diff; i++) {
+                temp = temp.next;
+            }
+            temp2 = secondHead;
+        } else {
+            diff = cnt2 - cnt1;
+            temp = secondHead;
+            for (int i = 0; i < diff; i++) {
+                temp = temp.next;
+            }
+            temp2 = firstHead;
+        }
+
+        // find the answer
+        while (temp != null && temp2 != null) {
+            if (temp == temp2)
+                return temp.data;
+            temp = temp.next;
+            temp2 = temp2.next;
+        }
+        return -1;
+    }
+
+    // get intersection node -- optimal
+    public Node getIntersectionNodeOptimal(Node headA, Node headB) {
+        Node temp1 = headA, temp2 = headB;
+
+        while (temp1 != null || temp2 != null) {
+            if (temp1 == temp2)
+                return temp1;
+            else if (temp1 == null)
+                temp1 = headB;
+            else if (temp2 == null)
+                temp2 = headA;
+            else {
+                temp1 = temp1.next;
+                temp2 = temp2.next;
+            }
+        }
+        return null;
+
+    }
+
+    // add 1 to a LL number -- extreme brute force
+    public static Node addOneBrute(Node head) {
+        if (head == null)
+            return null;
+
+        head = reverseSinglyLL(head);
+        Node temp = head;
+        int carry = 1;
+
+        while (temp != null) {
+            temp.data += carry;
+
+            if (temp.data < 10) {
+                carry = 0;
+                break;
+            } else {
+                temp.data = 0;
+                carry = 1;
+
+            }
+            temp = temp.next;
+        }
+
+        // get the result
+        if (carry == 1) {
+            Node newHead = new Node(1);
+            // reverse again
+            head = reverseSinglyLL(head);
+            newHead.next = head;
+            return newHead;
+        }
+        // simply return by reversing
+        return reverseSinglyLL(head);
+
+    }
+
+    public static int helper(Node temp) {
+        if (temp == null)
+            return 1;
+
+        int carry = helper(temp.next);
+
+        // backtracking code
+        temp.data += carry;
+
+        if (temp.data < 10) {
+            return 0;
+        }
+        temp.data = 0;
+        return 1;
+    }
+
+    public static Node addOne(Node head) {
+        // Write your code here.
+        int carry = helper(head);
+
+        if (carry == 1) {
+            Node newHead = new Node(1);
+            newHead.next = head;
+            return newHead;
+        }
+        return head;
+    }
+
+    // add 2 number represented by LL
+    public static Node add2NumbersLL(Node l1, Node l2) {
+        Node t1 = l1, t2 = l2, dummyNode = new Node(-1);
+        Node curr = dummyNode;
+        int carry = 0, sum = 0;
+
+        while (t1 != null || t2 != null) {
+            sum = carry;
+            if (t1 != null)
+                sum += t1.data;
+            if (t2 != null)
+                sum += t2.data;
+
+            Node newNode = new Node(sum % 10);
+            carry = sum / 10;
+
+            curr.next = newNode;
+            curr = newNode;
+
+            if (t1 != null)
+                t1 = t1.next;
+            if (t2 != null)
+                t2 = t2.next;
+        }
+
+        if (carry == 1) {
+            Node newNode = new Node(carry);
+            curr.next = newNode;
+        }
+        return dummyNode.next;
+
+    }
+
     // print DLL
     public static void printLL(Node head) {
         while (head != null) {
@@ -257,13 +883,16 @@ public class Medium {
         // solve();
         // t--;
         // }
-        Node head = new Node(2);
-        head.next = new Node(3);
-        head.next.next = new Node(5);
-        head.next.next.next = new Node(6);
-        head.next = head;
-        Node temp = detectStartingPointOptimal(head);
-        out.println(temp.data);
+        Node head = new Node(1);
+        head.next = new Node(9);
+        head.next.next = new Node(9);
+
+        Node head2 = new Node(2);
+        head2.next = new Node(3);
+        head2.next.next = new Node(3);
+        head = add2NumbersLL(head, head2);
+        printLL(head);
+
         out.close();
     }
 
@@ -286,18 +915,18 @@ public class Medium {
 
     static class Pair<K, V> {
         public K key;
-        public V value;
+        public V dataue;
 
         public Pair() {
         }
 
         public Pair(K k, V v) {
             key = k;
-            value = v;
+            dataue = v;
         }
 
         public String toString() {
-            return "(" + key + ", " + value + ")";
+            return "(" + key + ", " + dataue + ")";
         }
     }
 
@@ -370,7 +999,7 @@ public class Medium {
             bw = new BufferedWriter(new OutputStreamWriter(System.out), 1 << 16);
         }
 
-        // Print a single value
+        // Print a single dataue
         public void print(String s) throws IOException {
             bw.write(s);
         }
@@ -391,7 +1020,7 @@ public class Medium {
             bw.write(obj.toString());
         }
 
-        // Print a value with a newline
+        // Print a dataue with a newline
         public void println(String s) throws IOException {
             bw.write(s);
             bw.newLine();

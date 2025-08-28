@@ -199,6 +199,60 @@ def lengthOfLoopOptimal(head):
     return 0
 
 
+# sort a LL of 0's,1's and 2's
+def sortLLZOTBrute(head):
+    if head == None or head.next == None:
+        return head
+
+    values = []
+    curr = head
+
+    while curr is not None:
+        values.append(curr.data)
+        curr = curr.next
+
+    values.sort()
+    curr = head
+    i = 0
+    while curr is not None:
+        curr.data = values[i]
+        i += 1
+        curr = curr.next
+    return head
+
+
+# another efficient approach with list -- brute 2
+def sortLLZOTBrute2(head):
+    cnt0, cnt1, cnt2 = 0, 0, 0
+
+    curr = head
+    while curr is not None:
+        if curr.data == 0:
+            cnt0 += 1
+            curr = curr.next
+        elif curr.data == 1:
+            cnt1 += 1
+            curr = curr.next
+        else:
+            cnt2 += 1
+            curr = curr.next
+
+    # replace back
+    curr = head
+    while curr is not None:
+        if cnt0 != 0:
+            curr.data = 0
+            cnt0 -= 1
+        elif cnt1 != 0:
+            curr.data = 1
+            cnt1 -= 1
+        else:
+            curr.data = 2
+            cnt2 -= 1
+        curr = curr.next
+    return head
+
+
 # print LL
 def printLL(head):
     while head is not None:
@@ -213,13 +267,12 @@ def main():
 
     # start here
     head = Node(1)
-    head.next = Node(2)
-    head.next.next = Node(3)
-    head.next.next.next = Node(4)
-    head.next.next.next.next = Node(5)
-    head.next.next.next = head.next
-    length = lengthOfLoopOptimal(head)
-    print(length)
+    head.next = Node(1)
+    head.next.next = Node(0)
+    head.next.next.next = Node(2)
+    head.next.next.next.next = Node(2)
+    head = sortLLZOTBrute2(head)
+    printLL(head)
 
 
 threading.Thread(target=main).start()
